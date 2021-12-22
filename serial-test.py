@@ -37,8 +37,10 @@ def update():
                     response = ser.read(size) # 读取内容并显示
                     t.insert("insert", response)
                     t.yview_moveto(1.0)
+                    
                     if text.endswith("\r\n"):
                         try:
+                            print("1")
                             findLink = re.compile(r'ng=(.*)')
                             data = float(re.findall(findLink, text)[0])
                             text = ""
@@ -49,11 +51,21 @@ def update():
                         except IndexError as e:
                             print(1,e)
                             text=""
-                            continue
+                            pass
                     else:
-                        text = text + response.decode()
-
+                        try:
+                            text = text + response.decode()
+                        except UnicodeDecodeError as e:
+                            print(5,e)
+                            pass
+                            text=""
+                    if status == "stop":
+                        print("stop1")
+                        canvas.create_oval(715, 375, 735, 395,fill='black')
+                        canvas.update()
+                        break
                 if status == "stop":
+                    print("stop2")
                     canvas.create_oval(715, 375, 735, 395,fill='black')
                     canvas.update()
                     break
@@ -62,9 +74,9 @@ def update():
             print(2,e)
             pass
             text=""
+
         except ValueError as e:
             print(3,e)
-            pass
             text = ""
 def ui():
     global t,status,canvas
@@ -362,6 +374,7 @@ def t2_go():
 def t2_stop():
     global status
     status = "stop"
+    print("STOP")
 def t4_go():
     thread4 = myThread(4, "Thread-4", mat_draw)
     thread4.daemon = True
